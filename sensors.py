@@ -32,8 +32,7 @@ class Sensors:
         if duration == -2:
             return None 
         else:
-            distance_cm = (duration / 2) / 29.1
-            distance_mm = distance_cm * 10
+            distance_mm = (duration / 2) * 0.343
             return distance_mm
 
 # These functions get the distance from the left and right ToF sensors    

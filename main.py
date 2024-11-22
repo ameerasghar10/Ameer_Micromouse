@@ -5,12 +5,13 @@ from encoders import Encoders
 from sensors import Sensors
 from position_tracking import PositionTracker
 
+motor_control = MotorControl()
+encoders = Encoders()
+sensors = Sensors()
+position_tracker = PositionTracker(INITIAL_POSITION, INITIAL_DIRECTION)
+
 # This a function that will move the micromouse forward by one square(cell) in the maze. First it initialises all the neccessary parts for the function.
 def move_one_cell():
-    motor_control = MotorControl()
-    encoders = Encoders()
-    sensors = Sensors()
-    position_tracker = PositionTracker(INITIAL_POSITION, INITIAL_DIRECTION)
     
 # This sets the encoder counts to 0 so that if we're beginning to move from a place it starts at 0 and not another number
     encoders.reset_counts()
@@ -27,7 +28,7 @@ def move_one_cell():
             
 # This uses the ultrasonic sensor to check what the distance is to any walls that might be in front and if it is within the threshold limit that will be determined in the constants. If there is the loop is stopped by the break. 
             dist_front = sensors.measure_distance_front()
-            if dist_front is not None and dist_front < 0:
+            if dist_front is not None and dist_front < FRONT_DISTANCE_THRESHOLD_MM:
                 print("Wall detected ahead")
                 break
             

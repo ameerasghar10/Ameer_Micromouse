@@ -114,4 +114,4 @@ class Sensor:
         """Measure the distance in millimeters. Takes 0.01s."""
         self.myWrite16(0x0018, 0x01)  # Sysrange start
         time.sleep(0.01)
-        return self.myRead16(0x0062)  # Result range valueimport ustruct
+        return self.myRead16(0x0062)  # Result range

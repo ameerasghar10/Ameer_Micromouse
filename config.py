@@ -35,7 +35,8 @@ COUNTS_PER_CELL = int((MAZE_CELL_SIZE_MM / DISTANCE_PER_COUNT_MM) + 0.5)
 # These are placeholders for what we decide to be certain values depending on how the micromouse functions and can be iterated
 BASE_SPEED = 32768  
 SPEED_CORRECTION = 1000  
-SIDE_DISTANCE_THRESHOLD_MM = 5  
+SIDE_DISTANCE_THRESHOLD_MM = 5
+FRONT_DISTANCE_THRESHOLD_MM = 100
 
 # This defines the initial position and begins with North but can be changed depending on the maze. If starting with an unknown maze, a function may be written to work out where the micromouse is in the maze but for this project we will know whaat the maze is
 INITIAL_POSITION = (0, 0) 
