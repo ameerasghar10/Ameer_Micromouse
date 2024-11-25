@@ -1,6 +1,6 @@
 from machine import I2C, Pin
 from vl6180x_sensor import Sensor  
-
+import time
 
 i2c0 = I2C(0, scl=Pin(1), sda=Pin(0))  
 
