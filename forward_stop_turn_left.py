@@ -82,7 +82,7 @@ Kp = 1000  # Proportional gain for speed correction
 cell_length_mm = 180  # Length of one cell in mm
 wheel_diameter_mm = 40  # Wheel diameter in mm
 wheel_circumference = 3.1416 * wheel_diameter_mm  # π * diameter
-counts_per_rev = 240  # Encoder counts per wheel revolution (as per your original code)
+counts_per_rev = 240/2  # Encoder counts per wheel revolution (as per your original code)
 
 # Calculate counts per cell
 rotations_per_cell = cell_length_mm / wheel_circumference
@@ -213,4 +213,3 @@ finally:
     # Print final counts and cells moved
     print(f"Final Left Count: {count_left}, Final Right Count: {count_right}")
     print(f"Total cells moved: {cells_moved}")
-

@@ -82,7 +82,7 @@ Kp = 1000  # Proportional gain for speed correction
 cell_length_mm = 180  # Length of one cell in mm
 wheel_diameter_mm = 40  # Wheel diameter in mm
 wheel_circumference = 3.1416 * wheel_diameter_mm  # π * diameter
-counts_per_rev = 12 * 20  # Encoder counts per wheel revolution
+counts_per_rev = (12 * 20)/2  # Encoder counts per wheel revolution
 
 # Calculate counts per cell
 rotations_per_cell = cell_length_mm / wheel_circumference
@@ -113,7 +113,7 @@ try:
         print("Right Distance:", distance_right, "mm")
 
         # Check for obstacle in front
-        stop_distance = 100  # Distance threshold to stop (in mm)
+        stop_distance = 200  # Distance threshold to stop (in mm)
         if distance_front <= stop_distance and distance_front != 0:
             print(f"Obstacle detected at {distance_front} mm. Stopping.")
             stop_motors()

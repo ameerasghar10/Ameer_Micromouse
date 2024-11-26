@@ -1,8 +1,19 @@
 import time
-from machine import Pin, PWM
+from machine import I2C, Pin, SoftI2C, PWM
 
 # Delay execution by 5 seconds to allow time for setup
 time.sleep(5)
+
+# Initialize I2C buses for sensors
+i2c0 = I2C(0, scl=Pin(1), sda=Pin(0))   # Front sensor
+i2c1 = I2C(1, scl=Pin(3), sda=Pin(2))   # Left sensor
+i2c2 = SoftI2C(scl=Pin(5), sda=Pin(4))  # Right sensor
+
+# Initialize sensors
+from vl6180x_sensor import Sensor
+sensor_front = Sensor(i2c0)
+sensor_left = Sensor(i2c1)
+sensor_right = Sensor(i2c2)
 
 # Motor control pins
 dir_left = Pin(6, Pin.OUT)    # GP6 for left motor direction
@@ -44,6 +55,8 @@ def encoder_left_callback(pin):
         count_left += 1
     else:
         count_left -= 1
+    # Optional: Uncomment the next line for debugging
+    # print(f"Left Callback - Count: {count_left}")
 
 def encoder_right_callback(pin):
     global count_right
@@ -51,19 +64,28 @@ def encoder_right_callback(pin):
         count_right += 1
     else:
         count_right -= 1
+    # Optional: Uncomment the next line for debugging
+    # print(f"Right Callback - Count: {count_right}")
 
 # Set up interrupts for encoders
 encoder_left_A.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=encoder_left_callback)
 encoder_right_A.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=encoder_right_callback)
 
 # Function to move forward a specific distance while keeping straight
-def move_forward_distance(distance_mm, Kp=1000):
+def move_forward_distance(distance_mm, Kp=500):
     global count_left, count_right
+    # Constants
+    wheel_diameter_mm = 40  # Wheel diameter in mm
+    wheel_circumference = 3.1416 * wheel_diameter_mm  # π * diameter
+    counts_per_rev = 12 * 20 / 2  # Encoder counts per wheel revolution (480)
+    distance_target_mm = distance_mm  # Target distance in mm
+
     # Calculate target counts
-    wheel_circumference = 3.1416 * 40  # π * diameter in mm
-    counts_per_rev = 12 * 20  # Encoder counts per wheel revolution
-    rotations_needed = distance_mm / wheel_circumference
+    rotations_needed = distance_target_mm / wheel_circumference
     target_counts = int(rotations_needed * counts_per_rev)
+
+    print(f"Rotations needed: {rotations_needed:.2f}")
+    print(f"Target counts: {target_counts}")
 
     # Reset encoder counts
     count_left = 0
@@ -90,8 +112,12 @@ def move_forward_distance(distance_mm, Kp=1000):
             abs_count_left = abs(count_left)
             abs_count_right = abs(count_right)
 
+            # Print encoder counts for debugging
+            print(f"Left Count: {count_left}, Right Count: {count_right}")
+
             # Check if target counts reached
             if abs_count_left >= target_counts and abs_count_right >= target_counts:
+                print("Target distance reached. Stopping motors.")
                 break
 
             # Calculate error between left and right encoder counts
@@ -109,18 +135,19 @@ def move_forward_distance(distance_mm, Kp=1000):
             set_motor('left', direction_left, speed_left)
             set_motor('right', direction_right, speed_right)
 
-            # Optionally, print counts and speeds for debugging
-            print(f"Left Count: {count_left}, Right Count: {count_right}, Speed Left: {speed_left}, Speed Right: {speed_right}")
+            # Print adjusted speeds for debugging
+            print(f"Adjusted Speeds -> Left: {speed_left}, Right: {speed_right}")
 
             # Short delay to prevent high CPU usage
             time.sleep(0.01)
     except KeyboardInterrupt:
-        pass
+        print("Movement interrupted by user.")
     finally:
         # Stop motors after movement
         stop_motors()
         # Print final counts
         print(f"Final Left Count: {count_left}, Final Right Count: {count_right}")
 
-# Main code to move forward 180 cm (adjust distance_mm as needed)
-move_forward_distance(180)  # 180 mm is 18 cm
+# Main code to move forward 20 cm (200 mm)
+move_forward_distance(200)  # 200 mm is 20 cm
+
